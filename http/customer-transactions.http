@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:8081/api/customer-transactions
+
+### Create transaction
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "customerId": "customer-001",
+  "amount": 120.50,
+  "currency": "EUR"
+}
+
+### Get All transactions
+GET  {{baseUrl}}?page=1&size=20
+
+### Get transaction by id
+GET {{baseUrl}}/1
+
+
+### Get transactions by customer id
+GET {{baseUrl}}/customer/customer-001
+
+
+### Get transactions by status
+GET {{baseUrl}}/status/CREATED
+
+
+### Get transactions by customer id and status
+GET {{baseUrl}}/search?customerId=customer-001&status=CREATED
