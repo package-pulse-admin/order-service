@@ -7,6 +7,7 @@ import com.mihaela.orderplatform.enums.Currency;
 import com.mihaela.orderplatform.enums.TransactionStatus;
 import com.mihaela.orderplatform.mapper.CustomerTransactionMapper;
 import com.mihaela.orderplatform.repository.CustomerTransactionRepository;
+import com.mihaela.orderplatform.service.metrics.CustomMetricsService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class CustomerTransactionsService {
 
     private final CustomerTransactionRepository repository;
     private final CustomerTransactionMapper mapper;
+    private final CustomMetricsService metricsService;
 
     public Page<CustomerTransactionDto> findAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, DEFAULT_SORT);
@@ -48,6 +50,8 @@ public class CustomerTransactionsService {
         CustomerTransactions entity = mapper.toEntity(dto);
 
         CustomerTransactions saved = repository.save(entity);
+
+        metricsService.incrementOrdersMetric("SUCCESS", TransactionStatus.CREATED);
         return mapper.toDto(saved);
     }
 

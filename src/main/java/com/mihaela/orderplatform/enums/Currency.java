@@ -1,5 +1,7 @@
 package com.mihaela.orderplatform.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.Arrays;
 
 public enum Currency {
@@ -26,15 +28,14 @@ public enum Currency {
     BGN,
     UNKNOWN;
 
-
     public static Currency fromValue(String value) {
-        if (value == null || value.isBlank()) {
-            return UNKNOWN;
-        }
-
         return Arrays.stream(values())
                 .filter(currency -> currency.name().equalsIgnoreCase(value))
                 .findFirst()
-                .orElse(UNKNOWN);
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "Unsupported currency: " + value
+                        )
+                );
     }
 }
