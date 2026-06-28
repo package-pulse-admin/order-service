@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: order-platform-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: order_platform
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: order_user
+      MYSQL_PASSWORD: order_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ../database/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+    networks:
+      - order-platform-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: order-platform-prometheus
+    restart: always
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - order-platform-network
+
+
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: order-platform-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - order-platform-network
+
+volumes:
+  mysql_data:
+  grafana_data:
+
+
+
+networks:
+
+  order-platform-network:
+    driver: bridge

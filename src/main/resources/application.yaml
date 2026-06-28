@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: order-service
+  datasource:
+    url: ${DATABASE_URL_ORDER_PLATFORM}
+    username: ${DATABASE_USERNAME_ORDER_PLATFORM}
+    password: ${DATABASE_PASSWORD_ORDER_PLATFORM}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: 8080
+
+management:
+  server:
+    port: 9090
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  level:
+    com.mihaela.orderplatform: INFO
+
