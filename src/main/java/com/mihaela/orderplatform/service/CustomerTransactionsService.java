@@ -1,6 +1,7 @@
 package com.mihaela.orderplatform.service;
 
 import com.mihaela.orderplatform.api.exception.TransactionNotFoundException;
+import com.mihaela.orderplatform.kafka.OrderEventProducer;
 import com.mihaela.orderplatform.domain.CustomerTransactions;
 import com.mihaela.orderplatform.dto.CustomerTransactionDto;
 import com.mihaela.orderplatform.enums.Currency;
@@ -28,6 +29,7 @@ public class CustomerTransactionsService {
 
     private final CustomerTransactionRepository repository;
     private final CustomerTransactionMapper mapper;
+    private final OrderEventProducer orderEventProducer;
     private final CustomMetricsService metricsService;
 
     public Page<CustomerTransactionDto> findAll(int page, int size) {
@@ -45,11 +47,13 @@ public class CustomerTransactionsService {
     @Transactional
     public CustomerTransactionDto save(CustomerTransactionDto dto) {
         dto.setStatus(TransactionStatus.CREATED);
-        dto.setCurrency(Currency.fromValue(dto.getCustomerId()));
+        dto.setCurrency(Currency.fromValue(dto.getCurrency().name()));
 
         CustomerTransactions entity = mapper.toEntity(dto);
 
         CustomerTransactions saved = repository.save(entity);
+
+        orderEventProducer.publishOrderEvent(mapper.toEvent(dto));
 
         metricsService.incrementOrdersMetric("SUCCESS", TransactionStatus.CREATED);
         return mapper.toDto(saved);
