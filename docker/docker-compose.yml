@@ -20,6 +20,52 @@ services:
     networks:
       - order-platform-network
 
+  kafka:
+    image: apache/kafka:latest
+    container_name: order-platform-kafka
+    restart: always
+    ports:
+      - "9092:9092"
+    environment:
+      # KRaft mode
+      KAFKA_ENABLE_KRAFT: "yes"
+      KAFKA_CFG_PROCESS_ROLES: broker,controller
+      KAFKA_CFG_NODE_ID: 1
+      KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # Listeners
+      KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+      # Single-node settings
+      KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR: 1
+
+      ALLOW_PLAINTEXT_LISTENER: "yes"
+
+    volumes:
+      - kafka_data:/apache/kafka
+    networks:
+      - order-platform-network
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: order-platform-kafka-ui
+    restart: always
+    depends_on:
+      - kafka
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    networks:
+      - order-platform-network
+
   prometheus:
     image: prom/prometheus:latest
     container_name: order-platform-prometheus
@@ -30,8 +76,6 @@ services:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - order-platform-network
-
-
 
   grafana:
     image: grafana/grafana:latest
@@ -51,11 +95,9 @@ services:
 
 volumes:
   mysql_data:
+  kafka_data:
   grafana_data:
 
-
-
 networks:
-
   order-platform-network:
     driver: bridge
