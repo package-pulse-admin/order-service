@@ -2,10 +2,20 @@ spring:
   application:
     name: order-service
   datasource:
-    url: jdbc:mysql://localhost:3306/order_platform?useSSL=false&serverTimezone=UTC&allowPu
+    url: jdbc:mysql://localhost:3306/order_platform?useSSL=false&serverTimezone=UTC
     username: root
     password: 31052001
     driver-class-name: com.mysql.cj.jdbc.Driver
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+app:
+  kafka:
+    topics: order-transaction-topic
+    bootstrap-service: localhost:9092
+
 
 server:
   port: 8081
@@ -29,4 +39,6 @@ management:
 logging:
   level:
     com.mihaela.orderplatform: DEBUG
+    org.apache.kafka: DEBUG
+    org.springframework.kafka: DEBUG
 

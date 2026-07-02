@@ -1,5 +1,7 @@
 package com.mihaela.orderplatform.mapper;
 
+import com.mihaela.orderplatform.domain.CompositeKey;
+import com.mihaela.orderplatform.domain.PublishedOrderEvent;
 import com.mihaela.orderplatform.dto.CustomerTransactionDto;
 import com.mihaela.orderplatform.domain.CustomerTransactions;
 import org.springframework.stereotype.Component;
@@ -44,4 +46,10 @@ public class CustomerTransactionMapper {
 
         return entity;
     }
+
+   public PublishedOrderEvent toEvent (CustomerTransactionDto dto) {
+       String orderId = new CompositeKey(dto.getId(), dto.getCustomerId()).asString();
+       return new PublishedOrderEvent(orderId, dto.getStatus(),
+               dto.getAmount(), dto.getCurrency(), dto.getCreatedAt());
+   }
 }
