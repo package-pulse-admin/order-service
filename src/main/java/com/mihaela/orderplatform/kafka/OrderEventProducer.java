@@ -4,18 +4,21 @@ import com.mihaela.orderplatform.domain.PublishedOrderEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import tools.jackson.databind.ObjectMapper;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class OrderEventProducer {
 
-    private final KafkaTemplate<String, PublishedOrderEvent> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
     @Value("${app.kafka.topics}")
     private String topic;
 
     public void publishOrderEvent(PublishedOrderEvent event) {
-        kafkaTemplate.send(topic, event.orderId().toString(), event);
+        String msg = objectMapper.writeValueAsString(event);
+        kafkaTemplate.send(topic, event.orderId().toString(), msg);
     }
 }
