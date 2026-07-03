@@ -12,13 +12,46 @@ services:
       MYSQL_USER: order_user
       MYSQL_PASSWORD: order_password
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
       - ../database/data.sql:/docker-entrypoint-initdb.d/02-data.sql
+      - ../database/debezium-user.sql:/docker-entrypoint-initdb.d/03-debezium-user.sql
     networks:
       - order-platform-network
+
+    command:
+      [
+        "--server-id=1",
+        "--log-bin=mysql-bin",
+        "--binlog-format=ROW",
+        "--binlog-row-image=FULL"
+      ]
+
+  connect:
+    image: debezium/connect:3.0.0.Final
+    ports:
+      - "8083:8083"
+    depends_on:
+      - kafka
+      - mysql
+    environment:
+
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      STATUS_STORAGE_TOPIC: connect_statuses
+
+      CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      STATUS_STORAGE_REPLICATION_FACTOR: 1
+    networks:
+      - order-platform-network
+
+
 
   kafka:
     image: apache/kafka:latest
@@ -35,7 +68,7 @@ services:
 
       # FIXED
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
 
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
 

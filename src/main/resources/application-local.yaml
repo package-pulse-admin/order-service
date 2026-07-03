@@ -2,10 +2,14 @@ spring:
   application:
     name: order-service
   datasource:
-    url: jdbc:mysql://localhost:3306/order_platform?useSSL=false&serverTimezone=UTC
-    username: root
-    password: 31052001
+    url: jdbc:mysql://localhost:3307/order_platform
+    username: order_user
+    password: order_password
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
   kafka:
     bootstrap-servers: localhost:9092
     producer:

@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS customer_transactions (
+create SCHEMA IF NOT EXIST order_platform;
+
+CREATE TABLE IF NOT EXISTS order_platform.customer_transactions (
 
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
 
