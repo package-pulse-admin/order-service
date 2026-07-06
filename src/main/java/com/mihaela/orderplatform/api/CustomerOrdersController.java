@@ -41,13 +41,11 @@ public class CustomerOrdersController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
     }
 
-
     @GetMapping("/customer/{customerId}")
     public ResponseEntity<List<CustomerOrderDto>> findByCustomerId(@PathVariable String customerId) {
 
         return ResponseEntity.ok(service.findByCustomerId(customerId));
     }
-
 
     @GetMapping("/status/{status}")
     public ResponseEntity<List<CustomerOrderDto>> findByStatus(
