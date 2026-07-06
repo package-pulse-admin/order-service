@@ -1,6 +1,5 @@
 package com.mihaela.orderplatform.config.kafka;
 
-import com.mihaela.orderplatform.domain.PublishedOrderEvent;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
