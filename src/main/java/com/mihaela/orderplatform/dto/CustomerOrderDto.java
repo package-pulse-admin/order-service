@@ -14,7 +14,7 @@ import java.time.Instant;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomerTransactionDto {
+public class CustomerOrderDto {
 
     private Long id;
 

@@ -1,8 +1,8 @@
 package com.mihaela.orderplatform.api;
 
-import com.mihaela.orderplatform.dto.CustomerTransactionDto;
+import com.mihaela.orderplatform.dto.CustomerOrderDto;
 import com.mihaela.orderplatform.enums.TransactionStatus;
-import com.mihaela.orderplatform.service.CustomerTransactionsService;
+import com.mihaela.orderplatform.service.CustomerOrderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,12 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/customer-transactions")
 @RequiredArgsConstructor
-public class CustomerTransactionsController {
+public class CustomerOrdersController {
 
-    private final CustomerTransactionsService service;
+    private final CustomerOrderService service;
 
     @GetMapping
-    public ResponseEntity<Page<CustomerTransactionDto>> findAll(
+    public ResponseEntity<Page<CustomerOrderDto>> findAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -30,27 +30,25 @@ public class CustomerTransactionsController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerTransactionDto> findById(@PathVariable Long id) {
+    public ResponseEntity<CustomerOrderDto> findById(@PathVariable Long id) {
         log.debug("Request to fetch customer transaction for id {}", id);
         return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<CustomerTransactionDto> save(@RequestBody CustomerTransactionDto dto) {
+    public ResponseEntity<CustomerOrderDto> save(@RequestBody CustomerOrderDto dto) {
         log.debug("Request to save new transaction for customer {}", dto.getCustomerId());
         return ResponseEntity.status(HttpStatus.CREATED).body(service.save(dto));
     }
 
-
     @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<CustomerTransactionDto>> findByCustomerId(@PathVariable String customerId) {
+    public ResponseEntity<List<CustomerOrderDto>> findByCustomerId(@PathVariable String customerId) {
 
         return ResponseEntity.ok(service.findByCustomerId(customerId));
     }
 
-
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<CustomerTransactionDto>> findByStatus(
+    public ResponseEntity<List<CustomerOrderDto>> findByStatus(
             @PathVariable TransactionStatus status) {
 
         return ResponseEntity.ok(
@@ -60,7 +58,7 @@ public class CustomerTransactionsController {
 
 
     @GetMapping("/search")
-    public ResponseEntity<List<CustomerTransactionDto>> findByCustomerIdAndStatus(
+    public ResponseEntity<List<CustomerOrderDto>> findByCustomerIdAndStatus(
             @RequestParam String customerId,
             @RequestParam TransactionStatus status) {
 

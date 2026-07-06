@@ -1,4 +1,4 @@
-INSERT INTO customer_transactions(customer_id, amount, currency, status) VALUES
+INSERT INTO customer_orders(customer_id, amount, currency, status) VALUES
 
 ('customer-001',120.50,'EUR','CREATED'),
 

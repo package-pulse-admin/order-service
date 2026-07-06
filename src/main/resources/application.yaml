@@ -30,3 +30,7 @@ logging:
   level:
     com.mihaela.orderplatform: INFO
 
+springdoc:
+  swagger-ui:
+    path: /swagger-ui
+
